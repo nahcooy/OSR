@@ -1,0 +1,24 @@
+1. Loading train and val data...
+Full train data size: 89228
+Train known data size: 84316
+Train unknown data size: 4912
+Val data size: 22892
+Train unknown data after dedup with val: 4912
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Sampled indices count: 28746, max index: 84315
+Data size before sampling: 84316
+Data size after sampling: 28746
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+Sampled indices count: 10380, max index: 27803
+Data size before sampling: 27804
+Data size after sampling: 10380
+2. Train loader size: 28746, batches: 899
+3. Val loader size: 10380, batches: 325
+4. Initializing models...
+Epoch 1/10 - Training:   0%|          | 0/899 [00:00<?, ?batch/s]

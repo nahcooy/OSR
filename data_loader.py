@@ -8,11 +8,12 @@ from torch.utils.data import Dataset, DataLoader
 
 class NIHChestXrayDataset(Dataset):
     def __init__(self, csv_file, root_dir, transform=None, mode='train', 
-                 known_labels=None, unknown_labels=None, data_ratio=1.0, extra_unknown_data=None):
+                 known_labels=None, unknown_labels=None, data_ratio=1.0, extra_unknown_data=None, train_dir=None):
         print(f"Loading CSV: {csv_file}")
         self.data = pd.read_csv(csv_file)
         print(f"Initial data size from {csv_file}: {len(self.data)}")
         self.root_dir = root_dir
+        self.train_dir = train_dir if train_dir else root_dir  # train_dir 추가 (기본값은 root_dir)
         self.transform = transform
         self.mode = mode
         self.known_labels = known_labels if known_labels is not None else []
@@ -24,7 +25,7 @@ class NIHChestXrayDataset(Dataset):
         if mode == 'train':
             self.data = self.data[self.data['Finding Labels'].apply(
                 lambda x: all(label in self.known_labels + ['No Finding'] for label in x.split('|'))
-            )].reset_index(drop=True)  # 인덱스 리셋
+            )].reset_index(drop=True)
             print(f"Train mode filtered data size: {len(self.data)}")
             self.class_to_idx = {cls: idx for idx, cls in enumerate(self.known_labels)}
         elif mode == 'val':
@@ -52,7 +53,6 @@ class NIHChestXrayDataset(Dataset):
         if self.data_ratio < 1.0:
             label_counts = {label: [] for label in self.class_to_idx.keys()}
             normal_indices = []
-            # 필터링된 데이터의 인덱스 사용
             for idx in range(len(self.data)):
                 labels = self.data.iloc[idx]['Finding Labels'].split('|')
                 if "No Finding" in labels:
@@ -80,11 +80,18 @@ class NIHChestXrayDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.root_dir, self.data.iloc[idx]['Image Index'])
+        img_idx = self.data.iloc[idx]['Image Index']
+        # train_unknown_data의 경우 train_dir 사용
+        if self.extra_unknown_data is not None and img_idx in self.extra_unknown_data['Image Index'].values:
+            img_path = os.path.join(self.train_dir, img_idx)
+        else:
+            img_path = os.path.join(self.root_dir, img_idx)
         try:
             image = Image.open(img_path).convert('L')
         except (FileNotFoundError, IOError) as e:
             print(f"Error loading image {img_path}: {e}")
+            with open('missing_images.txt', 'a') as f:
+                f.write(f"{img_path}\n")
             image = Image.new('L', (224, 224), 0)
         
         labels = self.data.iloc[idx]['Finding Labels'].split('|')
@@ -106,7 +113,6 @@ class NIHChestXrayDataset(Dataset):
 
     def get_known_data(self):
         return getattr(self, 'known_data', pd.DataFrame())
-
 
 def load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labels, 
               batch_size=64, train_data_ratio=1.0, val_data_ratio=1.0):
@@ -137,7 +143,7 @@ def load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labe
     val_dataset = NIHChestXrayDataset(
         csv_file=val_csv, root_dir=val_dir, transform=transform, mode='val', 
         known_labels=known_labels, unknown_labels=unknown_labels, data_ratio=val_data_ratio,
-        extra_unknown_data=train_unknown_data
+        extra_unknown_data=train_unknown_data, train_dir=train_dir  # train_dir 추가
     )
 
     def collate_fn(batch):
@@ -145,13 +151,13 @@ def load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labe
         if len(batch) == 0:
             return None, None
         images, targets = zip(*batch)
-        return torch.stack(images), torch.stack(targets)
+        targets = torch.stack(targets)[:, :len(known_labels)]  # Validation 타겟 크기 조정
+        return torch.stack(images), targets
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
     
     return train_loader, val_loader
-
 
 if __name__ == "__main__":
     known_labels = ["Pneumonia", "Effusion"]
