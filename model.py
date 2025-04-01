@@ -1,11 +1,10 @@
-# model.py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import efficientnet_b3, EfficientNet_B3_Weights
 
 class Copycat(nn.Module):
-    def __init__(self, feature_dim=1536):
+    def __init__(self, feature_dim=1536, num_classes=None):
         super(Copycat, self).__init__()
         self.backbone = efficientnet_b3(weights=EfficientNet_B3_Weights.IMAGENET1K_V1)
         self.backbone.features[0][0] = nn.Conv2d(1, 40, kernel_size=3, stride=2, padding=1, bias=False)
@@ -13,6 +12,7 @@ class Copycat(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout(0.4)
         self.fc = nn.Linear(1536, feature_dim)
+        self.classifier = nn.Linear(feature_dim, num_classes) if num_classes else None
 
     def forward(self, x):
         intermediate_features = []
@@ -26,16 +26,17 @@ class Copycat(nn.Module):
         intermediate_features.append(x4)
         x5 = self.features[4](x4)
         intermediate_features.append(x5)
-        x = x5
-        for layer in self.features[5:]:
-            x = layer(x)
-        x6 = x
+        x6 = self.features[5](x5)
         intermediate_features.append(x6)
-        x = self.avgpool(x6)
+        x = x6
+        for layer in self.features[6:]:
+            x = layer(x)
+        x = self.avgpool(x)
         x = self.dropout(x)
         x = torch.flatten(x, 1)
-        x = self.fc(x)
-        return x, intermediate_features
+        features = self.fc(x)
+        logits = self.classifier(features) if self.classifier else features
+        return logits, intermediate_features
 
 
 class Classifier(nn.Module):
@@ -56,28 +57,58 @@ class Classifier(nn.Module):
 
     def forward(self, x, copycat_features=None):
         intermediate_features = []
-        x1 = self.features[0](x)
-        intermediate_features.append(x1)
-        x2 = self.features[1](x1)
-        intermediate_features.append(x2)
-        x3 = self.features[2](x2)
-        intermediate_features.append(x3)
-        x4 = self.features[3](x3)
+        outputs = {}
+
+        # 기본 경로 (주입 없이)
+        x_base = x
+        for i, layer in enumerate(self.features):
+            x_base = layer(x_base)
+            intermediate_features.append(x_base)
+        x_base = self.avgpool(x_base)
+        x_base = self.dropout(x_base)
+        x_base = torch.flatten(x_base, 1)
+        logits_base = self.fc(x_base)
+        outputs['base'] = logits_base
+
+        # 주입 경로 (conv2, conv4, conv6 대체)
         if copycat_features is not None:
-            x4 = x4 + copycat_features[3]  # Feature injection
-        intermediate_features.append(x4)
-        x5 = self.features[4](x4)
-        intermediate_features.append(x5)
-        x = x5
-        for layer in self.features[5:]:
-            x = layer(x)
-        x6 = x
-        intermediate_features.append(x6)
-        x = self.avgpool(x6)
-        x = self.dropout(x)
-        x = torch.flatten(x, 1)
-        logits = self.fc(x)
-        return logits, intermediate_features
+            # conv2 대체
+            x_conv2 = x
+            for i, layer in enumerate(self.features):
+                if i == 1:  # conv2
+                    x_conv2 = copycat_features[1]  # 대체
+                else:
+                    x_conv2 = layer(x_conv2)
+            x_conv2 = self.avgpool(x_conv2)
+            x_conv2 = self.dropout(x_conv2)
+            x_conv2 = torch.flatten(x_conv2, 1)
+            outputs['conv2'] = self.fc(x_conv2)
+
+            # conv4 대체
+            x_conv4 = x
+            for i, layer in enumerate(self.features):
+                if i == 3:  # conv4
+                    x_conv4 = copycat_features[3]  # 대체
+                else:
+                    x_conv4 = layer(x_conv4)
+            x_conv4 = self.avgpool(x_conv4)
+            x_conv4 = self.dropout(x_conv4)
+            x_conv4 = torch.flatten(x_conv4, 1)
+            outputs['conv4'] = self.fc(x_conv4)
+
+            # conv6 대체
+            x_conv6 = x
+            for i, layer in enumerate(self.features):
+                if i == 5:  # conv6
+                    x_conv6 = copycat_features[5]  # 대체
+                else:
+                    x_conv6 = layer(x_conv6)
+            x_conv6 = self.avgpool(x_conv6)
+            x_conv6 = self.dropout(x_conv6)
+            x_conv6 = torch.flatten(x_conv6, 1)
+            outputs['conv6'] = self.fc(x_conv6)
+
+        return outputs, intermediate_features  # {'base': logits, 'conv2': logits_conv2, 'conv4': logits_conv4, 'conv6': logits_conv6}
 
     def compute_joint_energy(self, logits):
         label_wise_energy = -torch.log(1 + torch.exp(logits))
@@ -92,9 +123,9 @@ class Classifier(nn.Module):
             if joint_energy[i] < tau_nor:
                 preds[i, self.class_to_idx["No Finding"]] = 1  # Normal
             elif joint_energy[i] > tau_unk:
-                preds[i] = (probs[i] > 0.5).float()  # Unknown은 Known처럼 예측 후 후처리
-                if not preds[i].any():  # 예측 없으면 Unknown
+                preds[i] = (probs[i] > 0.5).float()
+                if not preds[i].any():
                     preds[i] = -1
             else:
-                preds[i] = (probs[i] > 0.5).float()  # Known
+                preds[i] = (probs[i] > 0.5).float()
         return preds, joint_energy
