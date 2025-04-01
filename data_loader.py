@@ -13,7 +13,7 @@ class NIHChestXrayDataset(Dataset):
         self.data = pd.read_csv(csv_file)
         print(f"Initial data size from {csv_file}: {len(self.data)}")
         self.root_dir = root_dir
-        self.train_dir = train_dir if train_dir else root_dir  # train_dir 추가 (기본값은 root_dir)
+        self.train_dir = train_dir if train_dir else root_dir
         self.transform = transform
         self.mode = mode
         self.known_labels = known_labels if known_labels is not None else []
@@ -21,7 +21,6 @@ class NIHChestXrayDataset(Dataset):
         self.data_ratio = max(0.0, min(1.0, data_ratio))
         self.extra_unknown_data = extra_unknown_data
 
-        # 모드별 데이터 필터링
         if mode == 'train':
             self.data = self.data[self.data['Finding Labels'].apply(
                 lambda x: all(label in self.known_labels + ['No Finding'] for label in x.split('|'))
@@ -49,7 +48,6 @@ class NIHChestXrayDataset(Dataset):
         elif mode == 'test':
             self.class_to_idx = {cls: idx for idx, cls in enumerate(self.known_labels + self.unknown_labels)}
 
-        # 샘플링 개선
         if self.data_ratio < 1.0:
             label_counts = {label: [] for label in self.class_to_idx.keys()}
             normal_indices = []
@@ -71,8 +69,6 @@ class NIHChestXrayDataset(Dataset):
                 num_normal = max(1, int(len(normal_indices) * self.data_ratio))
                 sampled_indices.update(random.sample(normal_indices, min(num_normal, len(normal_indices))))
 
-            print(f"Sampled indices count: {len(sampled_indices)}, max index: {max(sampled_indices) if sampled_indices else 'None'}")
-            print(f"Data size before sampling: {len(self.data)}")
             self.data = self.data.iloc[list(sampled_indices)].reset_index(drop=True)
             print(f"Data size after sampling: {len(self.data)}")
 
@@ -81,18 +77,12 @@ class NIHChestXrayDataset(Dataset):
 
     def __getitem__(self, idx):
         img_idx = self.data.iloc[idx]['Image Index']
-        # train_unknown_data의 경우 train_dir 사용
-        if self.extra_unknown_data is not None and img_idx in self.extra_unknown_data['Image Index'].values:
-            img_path = os.path.join(self.train_dir, img_idx)
-        else:
-            img_path = os.path.join(self.root_dir, img_idx)
+        img_path = os.path.join(self.train_dir if self.extra_unknown_data is not None and img_idx in self.extra_unknown_data['Image Index'].values else self.root_dir, img_idx)
         try:
             image = Image.open(img_path).convert('L')
         except (FileNotFoundError, IOError) as e:
             print(f"Error loading image {img_path}: {e}")
-            with open('missing_images.txt', 'a') as f:
-                f.write(f"{img_path}\n")
-            image = Image.new('L', (224, 224), 0)
+            return None, None  # 문제가 있는 경우 None 반환
         
         labels = self.data.iloc[idx]['Finding Labels'].split('|')
         target = torch.zeros(len(self.class_to_idx), dtype=torch.float32)
@@ -104,7 +94,7 @@ class NIHChestXrayDataset(Dataset):
             image = self.transform(image)
         
         return image, target
-
+    
     def get_unknown_data_only(self):
         return getattr(self, 'unknown_data_only', pd.DataFrame())
 
@@ -127,14 +117,9 @@ def load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labe
     train_known_data = full_train_data[full_train_data['Finding Labels'].apply(
         lambda x: all(label in known_labels + ['No Finding'] for label in x.split('|'))
     )]
-    print(f"Train known data size: {len(train_known_data)}")
     train_unknown_data = full_train_data[~full_train_data.index.isin(train_known_data.index)]
-    print(f"Train unknown data size: {len(train_unknown_data)}")
-
     val_data = pd.read_csv(val_csv)
-    print(f"Val data size: {len(val_data)}")
     train_unknown_data = train_unknown_data[~train_unknown_data['Image Index'].isin(val_data['Image Index'])]
-    print(f"Train unknown data after dedup with val: {len(train_unknown_data)}")
 
     train_dataset = NIHChestXrayDataset(
         csv_file=train_csv, root_dir=train_dir, transform=transform, mode='train', 
@@ -143,16 +128,18 @@ def load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labe
     val_dataset = NIHChestXrayDataset(
         csv_file=val_csv, root_dir=val_dir, transform=transform, mode='val', 
         known_labels=known_labels, unknown_labels=unknown_labels, data_ratio=val_data_ratio,
-        extra_unknown_data=train_unknown_data, train_dir=train_dir  # train_dir 추가
+        extra_unknown_data=train_unknown_data, train_dir=train_dir
     )
 
     def collate_fn(batch):
         batch = [b for b in batch if b[0] is not None]
-        if len(batch) == 0:
-            return None, None
+        if not batch:
+            # 빈 배치 대신 더미 데이터 반환
+            return torch.zeros(1, 1, 224, 224), torch.zeros(1, len(known_labels) + len(unknown_labels))
         images, targets = zip(*batch)
-        targets = torch.stack(targets)[:, :len(known_labels)]  # Validation 타겟 크기 조정
-        return torch.stack(images), targets
+        images = torch.stack(images)
+        targets = torch.stack(targets)  # 전체 클래스 유지
+        return images, targets
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
