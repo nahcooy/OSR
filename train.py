@@ -57,7 +57,7 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
 
     # 데이터 로드
     try:
-        train_loader, val_loader = load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labels)
+        train_loader, val_loader = load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labels, train_data_ratio=0.3, val_data_ratio=0.3)
         if len(train_loader) == 0 or len(val_loader) == 0:
             raise ValueError("DataLoader is empty!")
     except Exception as e:
