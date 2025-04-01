@@ -1,15 +1,32 @@
-import pandas as pd
+import os
+import random
+from PIL import Image
 
-# CSV 파일 읽기
-df = pd.read_csv('/dataset/nahcooy/CXR8/Data_Entry_2017_v2020.csv')
+# 특정 디렉토리 경로
+directory = '/dataset/nahcooy/CXR8/images/original_images'  # 디렉토리 경로를 적어주세요
 
-# 'Finding Labels'의 고유한 값과 각 값의 개수 출력
-label_counts = df['Finding Labels'].value_counts()
+# 디렉토리 내 PNG 파일 리스트 가져오기
+png_files = [f for f in os.listdir(directory) if f.endswith('.png')]
 
-# 각 라벨의 비율 계산
-label_percentages = df['Finding Labels'].value_counts(normalize=True) * 100
+# 랜덤으로 100개 샘플 선택
+sample_files = random.sample(png_files, 100)
 
-# 결과 출력
-print("Unique Finding Labels, their counts, and percentages:")
-for label, count, percentage in zip(label_counts.index, label_counts.values, label_percentages.values):
-    print(f"{label}: Count = {count}, Percentage = {percentage:.2f}%")
+# 변수 초기화
+total_width = 0
+total_height = 0
+
+# 각 이미지의 width, height 합산
+for file in sample_files:
+    img_path = os.path.join(directory, file)
+    with Image.open(img_path) as img:
+        width, height = img.size
+        total_width += width
+        total_height += height
+
+# 평균 계산
+average_width = total_width / 100
+average_height = total_height / 100
+
+# 평균 출력
+print(f"Average Width: {average_width:.2f}")
+print(f"Average Height: {average_height:.2f}")
