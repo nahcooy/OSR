@@ -48,12 +48,12 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
                     "Pneumothorax", "Consolidation", "Pleural_Thickening", "Hernia", "No Finding",
                     "Pneumonia", "Edema", "Emphysema", "Fibrosis"]
     unknown_labels = ["Nodule"]
-    all_labels = known_labels + unknown_labels  # 평가용으로만 사용
+    all_labels = known_labels + unknown_labels
 
     try:
         print("1. Loading train and val data...")
         train_loader, val_loader = load_data(train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labels, 
-                                             train_data_ratio=0.3, val_data_ratio=0.3)
+                                             batch_size=32, train_data_ratio=0.3, val_data_ratio=0.3)
         print(f"2. Train loader size: {len(train_loader.dataset)}, batches: {len(train_loader)}")
         print(f"3. Val loader size: {len(val_loader.dataset)}, batches: {len(val_loader)}")
         if len(train_loader) == 0 or len(val_loader) == 0:
@@ -63,8 +63,8 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
         return
 
     print("4. Initializing models...")
-    classifier = Classifier(classid_list=known_labels).cuda()  # known_labels만으로 초기화
-    copycat = Copycat(num_classes=len(known_labels)).cuda()   # known_labels만으로 초기화
+    classifier = Classifier(classid_list=known_labels).cuda()
+    copycat = Copycat(num_classes=len(known_labels)).cuda()
     criterion = nn.BCEWithLogitsLoss()
     optimizer_classifier = optim.Adam(classifier.parameters(), lr=0.0001)
     optimizer_copycat = optim.Adam(copycat.parameters(), lr=0.0001)
@@ -73,16 +73,13 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
     best_epoch = 0
 
     for current_epoch in range(epoch):
-        classifier.train()
+        # 1. Copycat 학습 (독립 루프)
         copycat.train()
-        classifier_loss_total = 0.0
+        classifier.eval()  # Classifier는 학습하지 않음
         copycat_loss_total = 0.0
-        val_loss_total = 0.0
-        predictions, true_labels = [], []
-
-        with tqdm(train_loader, desc=f'Epoch {current_epoch+1}/{epoch}', unit='batch') as t:
+        with tqdm(train_loader, desc=f'Epoch {current_epoch+1}/{epoch} - Copycat', unit='batch') as t:
             for batch_idx, (images, labels) in enumerate(t):
-                print(f"5. Batch {batch_idx}: images shape: {images.shape}, labels shape: {labels.shape}")
+                print(f"5. Copycat Batch {batch_idx}: images shape: {images.shape}, labels shape: {labels.shape}")
                 images, labels = images.cuda(), labels.cuda()
 
                 optimizer_copycat.zero_grad()
@@ -98,7 +95,21 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
                 copycat_loss.backward()
                 optimizer_copycat.step()
 
+                copycat_loss_total += copycat_loss.item()
+                t.set_postfix(cpy_loss=copycat_loss.item())
+
+        # 2. Classifier 학습 (독립 루프)
+        classifier.train()
+        copycat.eval()  # Copycat은 학습하지 않음
+        classifier_loss_total = 0.0
+        with tqdm(train_loader, desc=f'Epoch {current_epoch+1}/{epoch} - Classifier', unit='batch') as t:
+            for batch_idx, (images, labels) in enumerate(t):
+                print(f"6. Classifier Batch {batch_idx}: images shape: {images.shape}, labels shape: {labels.shape}")
+                images, labels = images.cuda(), labels.cuda()
+
                 optimizer_classifier.zero_grad()
+                with torch.no_grad():
+                    _, copycat_features = copycat(images)  # Copycat은 고정된 상태로 특징만 추출
                 outputs, _ = classifier(images, copycat_features)
                 logits = outputs['base']
                 logits_conv2 = outputs['conv2']
@@ -111,7 +122,7 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
                 probs_conv6 = torch.sigmoid(logits_conv6)
                 alpha_easy = 0.5
                 alpha_hard = 1.0
-                y_tilde_easy = (1 - alpha_easy) * labels + alpha_easy / len(known_labels)  # known_labels 크기로 조정
+                y_tilde_easy = (1 - alpha_easy) * labels + alpha_easy / len(known_labels)
                 y_tilde_hard = (1 - alpha_hard) * labels + alpha_hard / len(known_labels)
                 l_ent_easy2 = -torch.mean(torch.sum(y_tilde_easy * torch.log(probs_conv2 + 1e-10), dim=1))
                 l_ent_easy4 = -torch.mean(torch.sum(y_tilde_easy * torch.log(probs_conv4 + 1e-10), dim=1))
@@ -121,21 +132,22 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
                 optimizer_classifier.step()
 
                 classifier_loss_total += classifier_loss.item()
-                copycat_loss_total += copycat_loss.item()
-                t.set_postfix(clf_loss=classifier_loss.item(), cpy_loss=copycat_loss.item())
+                t.set_postfix(clf_loss=classifier_loss.item())
 
+        # Validation
         classifier.eval()
         copycat.eval()
+        val_loss_total = 0.0
+        predictions, true_labels = [], []
         with torch.no_grad():
             for batch_idx, (images, labels) in enumerate(val_loader):
-                print(f"6. Val batch {batch_idx}: images shape: {images.shape}, labels shape: {labels.shape}")
+                print(f"7. Val Batch {batch_idx}: images shape: {images.shape}, labels shape: {labels.shape}")
                 images, labels = images.cuda(), labels.cuda()
                 _, copycat_features = copycat(images)
                 outputs, _ = classifier(images, copycat_features)
                 logits = outputs['base']
 
-                # Val 타겟 크기 조정 (15 -> 14)
-                labels = labels[:, :len(known_labels)]  # unknown_labels 제외
+                labels = labels[:, :len(known_labels)]  # Val 타겟 크기 조정
                 val_loss = criterion(logits, labels)
                 val_loss_total += val_loss.item()
 
@@ -144,8 +156,8 @@ def main(epoch=10, tau_nor=0.5, tau_unk=1.5, lambda_kd=1.0, lambda_ent=0.1):
                 true_labels.extend(labels.cpu().numpy())
 
         val_loss_avg = val_loss_total / len(val_loader)
-        print(f'Epoch {current_epoch+1}/{epoch}, Classifier Loss: {classifier_loss_total/len(train_loader):.4f}, '
-              f'Copycat Loss: {copycat_loss_total/len(train_loader):.4f}, Val Loss: {val_loss_avg:.4f}')
+        print(f'Epoch {current_epoch+1}/{epoch}, Copycat Loss: {copycat_loss_total/len(train_loader):.4f}, '
+              f'Classifier Loss: {classifier_loss_total/len(train_loader):.4f}, Val Loss: {val_loss_avg:.4f}')
         evaluate_metrics(np.array(true_labels), np.array(predictions), all_labels, known_labels, unknown_labels)
 
         if val_loss_avg < best_val_loss:
