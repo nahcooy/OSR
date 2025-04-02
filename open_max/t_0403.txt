@@ -2,11 +2,55 @@ Full train data size: 89228
 Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
 Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
 Train mode filtered data size: 84316
-Data size after sampling: 28775
+Data size after sampling: 28801
 Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
 Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
 Extra unknown data size: 4912
 Val mode after concat and dedup: 27804
 Val mode - unknown only: 2705, mixed: 3626, known: 21473
-Downloading: "https://download.pytorch.org/models/resnet50-11ad3fa6.pth" to /home/nahcooy/.cache/torch/hub/checkpoints/resnet50-11ad3fa6.pth
-  0%|          | 0.00/97.8M [00:00<?, ?B/s]  1%|          | 640k/97.8M [00:00<00:16, 6.02MB/s]  2%|▏         | 2.12M/97.8M [00:00<00:08, 11.4MB/s]  3%|▎         | 3.25M/97.8M [00:00<00:08, 11.3MB/s]  5%|▍         | 4.50M/97.8M [00:00<00:08, 11.7MB/s]  6%|▌         | 5.62M/97.8M [00:00<00:08, 11.6MB/s]  7%|▋         | 6.88M/97.8M [00:00<00:08, 11.4MB/s]  8%|▊         | 8.00M/97.8M [00:00<00:08, 11.3MB/s]  9%|▉         | 9.25M/97.8M [00:00<00:07, 11.8MB/s] 11%|█         | 10.5M/97.8M [00:00<00:07, 11.9MB/s] 12%|█▏        | 11.8M/97.8M [00:01<00:07, 11.8MB/s] 13%|█▎        | 13.0M/97.8M [00:01<00:07, 11.5MB/s] 15%|█▍        | 14.2M/97.8M [00:01<00:07, 11.9MB/s] 16%|█▌        | 15.5M/97.8M [00:01<00:07, 11.1MB/s] 17%|█▋        | 16.9M/97.8M [00:01<00:07, 11.9MB/s] 19%|█▊        | 18.1M/97.8M [00:01<00:07, 11.8MB/s] 20%|█▉        | 19.4M/97.8M [00:01<00:07, 11.7MB/s] 21%|██        | 20.6M/97.8M [00:01<00:06, 11.6MB/s] 22%|██▏       | 21.8M/97.8M [00:01<00:06, 11.5MB/s] 24%|██▎       | 23.0M/97.8M [00:02<00:06, 11.8MB/s] 25%|██▍       | 24.2M/97.8M [00:02<00:06, 11.5MB/s] 26%|██▌       | 25.5M/97.8M [00:02<00:06, 11.6MB/s] 27%|██▋       | 26.6M/97.8M [00:02<00:06, 11.5MB/s] 29%|██▊       | 27.9M/97.8M [00:02<00:06, 11.9MB/s] 30%|██▉       | 29.1M/97.8M [00:02<00:06, 11.4MB/s] 31%|███       | 30.5M/97.8M [00:02<00:05, 11.9MB/s] 32%|███▏      | 31.8M/97.8M [00:02<00:05, 11.6MB/s] 34%|███▎      | 32.9M/97.8M [00:02<00:05, 11.5MB/s] 35%|███▍      | 34.1M/97.8M [00:03<00:05, 11.7MB/s] 36%|███▌      | 35.4M/97.8M [00:03<00:05, 11.9MB/s]
+Traceback (most recent call last):
+  File "train.py", line 303, in <module>
+    main()
+  File "train.py", line 299, in main
+    train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
+  File "train.py", line 197, in train_and_evaluate
+    outputs = model(images)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "train.py", line 166, in forward
+    x = self.features(x)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchvision/models/resnet.py", line 158, in forward
+    identity = self.downsample(x)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 458, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 454, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 98.00 MiB. GPU 1 has a total capacity of 23.59 GiB of which 62.12 MiB is free. Process 3307242 has 22.53 GiB memory in use. Including non-PyTorch memory, this process has 992.00 MiB memory in use. Of the allocated memory 668.45 MiB is allocated by PyTorch, and 21.55 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

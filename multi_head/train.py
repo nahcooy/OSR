@@ -87,7 +87,7 @@ def train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, nu
 
         # 1. Binary Metric (Unknown vs Known)
         binary_gt = np.any(all_targets[:, len(model.classid_list):], axis=1).astype(int)
-        binary_pred = (np.max(all_outputs,軸=1) < 0.5).astype(int)
+        binary_pred = (np.max(all_outputs, axis=1) < 0.5).astype(int)
         binary_auroc = roc_auc_score(binary_gt, 1 - np.max(all_outputs, axis=1))
         binary_f1 = f1_score(binary_gt, binary_pred)
 

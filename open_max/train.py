@@ -149,7 +149,7 @@ class OSRClassifier(nn.Module):
         super(OSRClassifier, self).__init__()
         self.num_classes = len(classid_list)
         self.feature_dim = feature_dim
-        self.device = torch.device('cuda:1')
+        self.device = torch.device('cuda:0')
         self.classid_list = classid_list
         self.class_to_idx = {cls: idx for idx, cls in enumerate(classid_list)}
 
@@ -287,7 +287,7 @@ def main():
 
     train_loader, val_loader = load_data(
         train_csv, train_dir, val_csv, val_dir, known_labels, unknown_labels,
-        batch_size=64, train_data_ratio=0.3, val_data_ratio=1.0
+        batch_size=128, train_data_ratio=0.3, val_data_ratio=1.0
     )
 
     model = OSRClassifier(classid_list=known_labels)
@@ -299,5 +299,5 @@ def main():
     train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
 
 if __name__ == "__main__":
-    torch.cuda.set_device(1)
+    torch.cuda.set_device(0)
     main()

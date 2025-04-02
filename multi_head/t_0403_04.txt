@@ -1,0 +1,40 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28720
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-03 03:21:42] Epoch 1, Batch 50/225: Running Train Loss: 0.2669
+[2025-04-03 03:23:17] Epoch 1, Batch 100/225: Running Train Loss: 0.2239
+[2025-04-03 03:24:52] Epoch 1, Batch 150/225: Running Train Loss: 0.2225
+[2025-04-03 03:26:28] Epoch 1, Batch 200/225: Running Train Loss: 0.2183
+[2025-04-03 03:33:21] Epoch 1:
+[2025-04-03 03:33:21]   Train Loss: 0.2314
+[2025-04-03 03:33:21]   Val Loss: 0.2073
+[2025-04-03 03:33:21]   Binary (Unknown vs Known) - AUROC: 0.5561, F1: 0.3346
+[2025-04-03 03:33:21]   Multiclass - AUROC: 0.5353, F1: 0.1330
+[2025-04-03 03:33:21]   Closed Set - AUROC: 0.7572, F1: 0.1186
+[2025-04-03 03:33:21]   Saved: best_train_loss.pt
+[2025-04-03 03:33:21]   Saved: best_val_loss_unknown.pt
+[2025-04-03 03:33:21]   Saved: best_val_loss_multiclass.pt
+[2025-04-03 03:34:56] Epoch 2, Batch 50/225: Running Train Loss: 0.2108
+[2025-04-03 03:36:30] Epoch 2, Batch 100/225: Running Train Loss: 0.2079
+[2025-04-03 03:38:06] Epoch 2, Batch 150/225: Running Train Loss: 0.2092
+[2025-04-03 03:39:40] Epoch 2, Batch 200/225: Running Train Loss: 0.2077
+[2025-04-03 03:46:34] Epoch 2:
+[2025-04-03 03:46:34]   Train Loss: 0.2086
+[2025-04-03 03:46:34]   Val Loss: 0.2056
+[2025-04-03 03:46:34]   Binary (Unknown vs Known) - AUROC: 0.5801, F1: 0.3397
+[2025-04-03 03:46:34]   Multiclass - AUROC: 0.5549, F1: 0.1741
+[2025-04-03 03:46:34]   Closed Set - AUROC: 0.7825, F1: 0.1623
+[2025-04-03 03:46:34]   Saved: best_train_loss.pt
+[2025-04-03 03:46:35]   Saved: best_val_loss_unknown.pt
+[2025-04-03 03:46:35]   Saved: best_val_loss_multiclass.pt
+[2025-04-03 03:48:10] Epoch 3, Batch 50/225: Running Train Loss: 0.1957
+[2025-04-03 03:51:55] Epoch 3, Batch 100/225: Running Train Loss: 0.1979
+[2025-04-03 03:53:42] Epoch 3, Batch 150/225: Running Train Loss: 0.1986
+[2025-04-03 03:55:30] Epoch 3, Batch 200/225: Running Train Loss: 0.2003
