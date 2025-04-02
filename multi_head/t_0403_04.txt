@@ -38,3 +38,51 @@ Val mode - unknown only: 2705, mixed: 3626, known: 21473
 [2025-04-03 03:51:55] Epoch 3, Batch 100/225: Running Train Loss: 0.1979
 [2025-04-03 03:53:42] Epoch 3, Batch 150/225: Running Train Loss: 0.1986
 [2025-04-03 03:55:30] Epoch 3, Batch 200/225: Running Train Loss: 0.2003
+[2025-04-03 04:04:22] Epoch 3:
+[2025-04-03 04:04:22]   Train Loss: 0.1982
+[2025-04-03 04:04:22]   Val Loss: 0.2039
+[2025-04-03 04:04:22]   Binary (Unknown vs Known) - AUROC: 0.5822, F1: 0.3182
+[2025-04-03 04:04:22]   Multiclass - AUROC: 0.5367, F1: 0.1393
+[2025-04-03 04:04:22]   Closed Set - AUROC: 0.7878, F1: 0.1265
+[2025-04-03 04:04:23]   Saved: best_train_loss.pt
+[2025-04-03 04:04:23]   Saved: best_val_loss_unknown.pt
+[2025-04-03 04:04:23]   Saved: best_val_loss_multiclass.pt
+[2025-04-03 04:06:18] Epoch 4, Batch 50/225: Running Train Loss: 0.1826
+[2025-04-03 04:08:12] Epoch 4, Batch 100/225: Running Train Loss: 0.1857
+[2025-04-03 04:14:11] Epoch 4, Batch 150/225: Running Train Loss: 0.1875
+[2025-04-03 04:15:58] Epoch 4, Batch 200/225: Running Train Loss: 0.1905
+[2025-04-03 04:24:24] Epoch 4:
+[2025-04-03 04:24:24]   Train Loss: 0.1870
+[2025-04-03 04:24:24]   Val Loss: 0.2018
+[2025-04-03 04:24:24]   Binary (Unknown vs Known) - AUROC: 0.5795, F1: 0.3177
+[2025-04-03 04:24:24]   Multiclass - AUROC: 0.5495, F1: 0.1781
+[2025-04-03 04:24:24]   Closed Set - AUROC: 0.7834, F1: 0.1682
+[2025-04-03 04:24:25]   Saved: best_train_loss.pt
+[2025-04-03 04:24:25]   Saved: best_val_loss_unknown.pt
+[2025-04-03 04:24:25]   Saved: best_val_loss_multiclass.pt
+[2025-04-03 04:26:20] Epoch 5, Batch 50/225: Running Train Loss: 0.1644
+[2025-04-03 04:28:14] Epoch 5, Batch 100/225: Running Train Loss: 0.1745
+[2025-04-03 04:30:08] Epoch 5, Batch 150/225: Running Train Loss: 0.1756
+[2025-04-03 04:32:01] Epoch 5, Batch 200/225: Running Train Loss: 0.1751
+[2025-04-03 04:40:24] Epoch 5:
+[2025-04-03 04:40:24]   Train Loss: 0.1725
+[2025-04-03 04:40:24]   Val Loss: 0.2263
+[2025-04-03 04:40:24]   Binary (Unknown vs Known) - AUROC: 0.5744, F1: 0.2771
+[2025-04-03 04:40:24]   Multiclass - AUROC: 0.5419, F1: 0.1605
+[2025-04-03 04:40:24]   Closed Set - AUROC: 0.7710, F1: 0.1522
+[2025-04-03 04:40:25]   Saved: best_train_loss.pt
+[2025-04-03 04:42:17] Epoch 6, Batch 50/225: Running Train Loss: 0.1492
+[2025-04-03 04:44:06] Epoch 6, Batch 100/225: Running Train Loss: 0.1519
+[2025-04-03 04:45:58] Epoch 6, Batch 150/225: Running Train Loss: 0.1551
+[2025-04-03 04:47:52] Epoch 6, Batch 200/225: Running Train Loss: 0.1615
+[2025-04-03 04:56:18] Epoch 6:
+[2025-04-03 04:56:18]   Train Loss: 0.1555
+[2025-04-03 04:56:18]   Val Loss: 0.2379
+[2025-04-03 04:56:18]   Binary (Unknown vs Known) - AUROC: 0.5634, F1: 0.2321
+[2025-04-03 04:56:18]   Multiclass - AUROC: 0.5647, F1: 0.2102
+[2025-04-03 04:56:18]   Closed Set - AUROC: 0.7750, F1: 0.2087
+[2025-04-03 04:56:18]   Saved: best_train_loss.pt
+[2025-04-03 04:58:12] Epoch 7, Batch 50/225: Running Train Loss: 0.1236
+[2025-04-03 05:00:05] Epoch 7, Batch 100/225: Running Train Loss: 0.1335
+[2025-04-03 05:02:00] Epoch 7, Batch 150/225: Running Train Loss: 0.1422
+[2025-04-03 05:03:57] Epoch 7, Batch 200/225: Running Train Loss: 0.1456

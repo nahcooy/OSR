@@ -262,15 +262,15 @@ def train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, nu
         # Best 모델 저장
         if train_loss < best_train_loss:
             best_train_loss = train_loss
-            torch.save(model.state_dict(), '/nahcooy/OSR/multi_head/checkpoints/best_train_loss.pt')
+            torch.save(model.state_dict(), '/nahcooy/OSR/open_max/checkpoints/best_train_loss.pt')
             print(f"[{current_time}]   Saved: best_train_loss.pt")
         if val_loss_unknown < best_val_loss_unknown:
             best_val_loss_unknown = val_loss_unknown
-            torch.save(model.state_dict(), '/nahcooy/OSR/multi_head/checkpoints/best_val_loss_unknown.pt')
+            torch.save(model.state_dict(), '/nahcooy/OSR/open_max/checkpoints/best_val_loss_unknown.pt')
             print(f"[{current_time}]   Saved: best_val_loss_unknown.pt")
         if val_loss_multiclass < best_val_loss_multiclass:
             best_val_loss_multiclass = val_loss_multiclass
-            torch.save(model.state_dict(), '/nahcooy/OSR/multi_head/checkpoints/best_val_loss_multiclass.pt')
+            torch.save(model.state_dict(), '/nahcooy/OSR/open_max/checkpoints/best_val_loss_multiclass.pt')
             print(f"[{current_time}]   Saved: best_val_loss_multiclass.pt")
 
 # 메인 함수
