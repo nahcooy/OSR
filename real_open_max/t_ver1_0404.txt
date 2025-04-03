@@ -1,0 +1,14 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28813
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-04 02:20:19] Epoch 1, Batch 50/226: Running Train Loss: 0.2591
+[2025-04-04 02:21:50] Epoch 1, Batch 100/226: Running Train Loss: 0.2292
+[2025-04-04 02:23:21] Epoch 1, Batch 150/226: Running Train Loss: 0.2262
+[2025-04-04 02:24:53] Epoch 1, Batch 200/226: Running Train Loss: 0.2212

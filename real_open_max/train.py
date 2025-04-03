@@ -12,7 +12,7 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from datetime import datetime
 from scipy.stats import weibull_min
-
+from data_loader import load_data
 
 # OpenMax 클래스
 class OpenMax:
