@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    from torchmetrics import AUROC, F1Score  # torchmetrics 추가
+ModuleNotFoundError: No module named 'torchmetrics'
