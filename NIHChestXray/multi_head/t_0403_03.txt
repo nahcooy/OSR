@@ -1,0 +1,23 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28725
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-03 03:03:53] Epoch 1, Batch 50/225: Running Train Loss: 0.2687
+[2025-04-03 03:05:29] Epoch 1, Batch 100/225: Running Train Loss: 0.2284
+[2025-04-03 03:07:04] Epoch 1, Batch 150/225: Running Train Loss: 0.2174
+[2025-04-03 03:08:39] Epoch 1, Batch 200/225: Running Train Loss: 0.2162
+Traceback (most recent call last):
+  File "train.py", line 165, in <module>
+    main()
+  File "train.py", line 161, in main
+    train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
+  File "train.py", line 90, in train_and_evaluate
+    binary_pred = (np.max(all_outputs,軸=1) < 0.5).astype(int)
+  File "<__array_function__ internals>", line 198, in amax
+TypeError: amax() got an unexpected keyword argument '軸'

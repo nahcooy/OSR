@@ -1,0 +1,37 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 45988
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-04 03:14:10] Epoch 1, Batch 50/180: Running Train Loss: 0.3331
+[2025-04-04 03:14:47] Epoch 1, Batch 100/180: Running Train Loss: 0.2248
+[2025-04-04 03:15:25] Epoch 1, Batch 150/180: Running Train Loss: 0.2200
+Traceback (most recent call last):
+  File "train.py", line 238, in <module>
+    main()
+  File "train.py", line 234, in main
+    train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
+  File "train.py", line 180, in train_and_evaluate
+    closed_auroc = multiclass_auroc_metric(all_openmax_preds, closed_targets).item()
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/metric.py", line 312, in forward
+    self._forward_cache = self._forward_reduce_state_update(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/metric.py", line 381, in _forward_reduce_state_update
+    self.update(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/metric.py", line 483, in wrapped_func
+    update(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/classification/precision_recall_curve.py", line 562, in update
+    _multilabel_precision_recall_curve_tensor_validation(preds, target, self.num_labels, self.ignore_index)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/functional/classification/precision_recall_curve.py", line 738, in _multilabel_precision_recall_curve_tensor_validation
+    _binary_precision_recall_curve_tensor_validation(preds, target, ignore_index)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchmetrics/functional/classification/precision_recall_curve.py", line 139, in _binary_precision_recall_curve_tensor_validation
+    raise ValueError(
+ValueError: Expected argument `target` to be an int or long tensor with ground truth labels but got tensor with dtype torch.float32

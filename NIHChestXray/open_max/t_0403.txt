@@ -1,0 +1,56 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28801
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+Traceback (most recent call last):
+  File "train.py", line 303, in <module>
+    main()
+  File "train.py", line 299, in main
+    train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
+  File "train.py", line 197, in train_and_evaluate
+    outputs = model(images)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "train.py", line 166, in forward
+    x = self.features(x)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torchvision/models/resnet.py", line 158, in forward
+    identity = self.downsample(x)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/container.py", line 219, in forward
+    input = module(input)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 458, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/home/nahcooy/miniconda3/envs/osr/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 454, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 98.00 MiB. GPU 1 has a total capacity of 23.59 GiB of which 62.12 MiB is free. Process 3307242 has 22.53 GiB memory in use. Including non-PyTorch memory, this process has 992.00 MiB memory in use. Of the allocated memory 668.45 MiB is allocated by PyTorch, and 21.55 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

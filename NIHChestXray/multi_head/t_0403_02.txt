@@ -1,0 +1,29 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28782
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-03 02:44:44] Epoch 1, Batch 50/225: Running Train Loss: 0.2646
+[2025-04-03 02:46:20] Epoch 1, Batch 100/225: Running Train Loss: 0.2234
+[2025-04-03 02:48:00] Epoch 1, Batch 150/225: Running Train Loss: 0.2193
+[2025-04-03 02:49:49] Epoch 1, Batch 200/225: Running Train Loss: 0.2170
+[2025-04-03 02:57:47] Epoch 1:
+[2025-04-03 02:57:47]   Train Loss: 0.2290
+[2025-04-03 02:57:47]   Val Loss: 0.2058
+[2025-04-03 02:57:47]   Binary (Unknown vs Known) - AUROC: 0.5703, F1: 0.3219
+[2025-04-03 02:57:47]   Multiclass - AUROC: 0.5258, F1: 0.1045
+[2025-04-03 02:57:47]   Closed Set - AUROC: 0.7594, F1: 0.0890
+[2025-04-03 02:57:47]   Saved: best_train_loss.pt
+Traceback (most recent call last):
+  File "train.py", line 161, in <module>
+    main()
+  File "train.py", line 157, in main
+    train_and_evaluate(model, train_loader, val_loader, optimizer, criterion, num_epochs)
+  File "train.py", line 124, in train_and_evaluate
+    if val_loss_unknown < best_val_loss_unknown:
+NameError: name 'val_loss_unknown' is not defined

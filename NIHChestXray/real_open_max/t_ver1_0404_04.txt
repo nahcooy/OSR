@@ -1,0 +1,73 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 46129
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-04 03:42:51] Epoch 1, Batch 50/181: Running Train Loss: 0.3423
+[2025-04-04 03:43:28] Epoch 1, Batch 100/181: Running Train Loss: 0.2207
+[2025-04-04 03:44:06] Epoch 1, Batch 150/181: Running Train Loss: 0.2187
+[2025-04-04 03:48:09] Epoch 1:
+[2025-04-04 03:48:09]   Train Loss: 0.2534
+[2025-04-04 03:48:09]   Val Loss: 0.2164
+[2025-04-04 03:48:09]   Binary (Unknown vs Known) - AUROC: 0.0387, F1: 0.0000
+[2025-04-04 03:48:09]   Multiclass (Known Only) - AUROC: 0.0000, F1: 0.0000
+[2025-04-04 03:48:09]   Closed Set - AUROC: 0.3101, F1: 0.0000
+[2025-04-04 03:48:09]   Saved: best_train_loss.pt
+[2025-04-04 03:48:48] Epoch 2, Batch 50/181: Running Train Loss: 0.2146
+[2025-04-04 03:49:24] Epoch 2, Batch 100/181: Running Train Loss: 0.2138
+[2025-04-04 03:50:03] Epoch 2, Batch 150/181: Running Train Loss: 0.2139
+[2025-04-04 03:51:47] Epoch 2:
+[2025-04-04 03:51:47]   Train Loss: 0.2139
+[2025-04-04 03:51:47]   Val Loss: 0.2209
+[2025-04-04 03:51:47]   Saved: best_train_loss.pt
+[2025-04-04 03:52:27] Epoch 3, Batch 50/181: Running Train Loss: 0.2121
+[2025-04-04 03:53:03] Epoch 3, Batch 100/181: Running Train Loss: 0.2129
+[2025-04-04 03:53:42] Epoch 3, Batch 150/181: Running Train Loss: 0.2145
+[2025-04-04 03:55:26] Epoch 3:
+[2025-04-04 03:55:26]   Train Loss: 0.2132
+[2025-04-04 03:55:26]   Val Loss: 0.2399
+[2025-04-04 03:55:26]   Saved: best_train_loss.pt
+[2025-04-04 03:56:06] Epoch 4, Batch 50/181: Running Train Loss: 0.2114
+[2025-04-04 03:56:42] Epoch 4, Batch 100/181: Running Train Loss: 0.2119
+[2025-04-04 03:57:20] Epoch 4, Batch 150/181: Running Train Loss: 0.2131
+[2025-04-04 03:59:05] Epoch 4:
+[2025-04-04 03:59:05]   Train Loss: 0.2124
+[2025-04-04 03:59:05]   Val Loss: 0.2219
+[2025-04-04 03:59:05]   Saved: best_train_loss.pt
+[2025-04-04 03:59:45] Epoch 5, Batch 50/181: Running Train Loss: 0.2120
+[2025-04-04 04:00:22] Epoch 5, Batch 100/181: Running Train Loss: 0.2121
+[2025-04-04 04:01:00] Epoch 5, Batch 150/181: Running Train Loss: 0.2158
+[2025-04-04 04:02:45] Epoch 5:
+[2025-04-04 04:02:45]   Train Loss: 0.2133
+[2025-04-04 04:02:45]   Val Loss: 0.2332
+[2025-04-04 04:03:24] Epoch 6, Batch 50/181: Running Train Loss: 0.2131
+[2025-04-04 04:04:01] Epoch 6, Batch 100/181: Running Train Loss: 0.2114
+[2025-04-04 04:04:40] Epoch 6, Batch 150/181: Running Train Loss: 0.2132
+[2025-04-04 04:08:43] Epoch 6:
+[2025-04-04 04:08:43]   Train Loss: 0.2125
+[2025-04-04 04:08:43]   Val Loss: 0.2357
+[2025-04-04 04:08:43]   Binary (Unknown vs Known) - AUROC: 0.0387, F1: 0.0000
+[2025-04-04 04:08:43]   Multiclass (Known Only) - AUROC: 0.0000, F1: 0.0000
+[2025-04-04 04:08:43]   Closed Set - AUROC: 0.3101, F1: 0.0000
+[2025-04-04 04:09:24] Epoch 7, Batch 50/181: Running Train Loss: 0.2131
+[2025-04-04 04:10:01] Epoch 7, Batch 100/181: Running Train Loss: 0.2119
+[2025-04-04 04:10:41] Epoch 7, Batch 150/181: Running Train Loss: 0.2101
+[2025-04-04 04:12:31] Epoch 7:
+[2025-04-04 04:12:31]   Train Loss: 0.2118
+[2025-04-04 04:12:31]   Val Loss: 0.2320
+[2025-04-04 04:12:31]   Saved: best_train_loss.pt
+[2025-04-04 04:13:12] Epoch 8, Batch 50/181: Running Train Loss: 0.2076
+[2025-04-04 04:13:50] Epoch 8, Batch 100/181: Running Train Loss: 0.2131
+[2025-04-04 04:14:30] Epoch 8, Batch 150/181: Running Train Loss: 0.2140
+[2025-04-04 04:16:18] Epoch 8:
+[2025-04-04 04:16:18]   Train Loss: 0.2116
+[2025-04-04 04:16:18]   Val Loss: 0.2332
+[2025-04-04 04:16:18]   Saved: best_train_loss.pt
+[2025-04-04 04:16:59] Epoch 9, Batch 50/181: Running Train Loss: 0.2111
+[2025-04-04 04:17:37] Epoch 9, Batch 100/181: Running Train Loss: 0.2099
+[2025-04-04 04:18:16] Epoch 9, Batch 150/181: Running Train Loss: 0.2128

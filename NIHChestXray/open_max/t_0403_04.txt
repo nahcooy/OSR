@@ -1,0 +1,27 @@
+Full train data size: 89228
+Loading CSV: /dataset/nahcooy/CXR8/images/train.csv
+Initial data size from /dataset/nahcooy/CXR8/images/train.csv: 89228
+Train mode filtered data size: 84316
+Data size after sampling: 28701
+Loading CSV: /dataset/nahcooy/CXR8/images/val.csv
+Initial data size from /dataset/nahcooy/CXR8/images/val.csv: 22892
+Extra unknown data size: 4912
+Val mode after concat and dedup: 27804
+Val mode - unknown only: 2705, mixed: 3626, known: 21473
+[2025-04-03 04:16:49] Epoch 1, Batch 50/225: Running Train Loss: 0.2646
+[2025-04-03 04:18:42] Epoch 1, Batch 100/225: Running Train Loss: 0.2323
+[2025-04-03 04:20:35] Epoch 1, Batch 150/225: Running Train Loss: 0.2266
+[2025-04-03 04:22:26] Epoch 1, Batch 200/225: Running Train Loss: 0.2225
+[2025-04-03 04:30:47] Epoch 1:
+[2025-04-03 04:30:47]   Train Loss: 0.2352
+[2025-04-03 04:30:47]   Val Loss: 0.2150
+[2025-04-03 04:30:47]   Binary (Unknown vs Known) - AUROC: 0.5468, F1: 0.3136
+[2025-04-03 04:30:47]   Multiclass - AUROC: 0.5195, F1: 0.0867
+[2025-04-03 04:30:47]   Closed Set - AUROC: 0.7242, F1: 0.0705
+[2025-04-03 04:30:47]   Saved: best_train_loss.pt
+[2025-04-03 04:30:47]   Saved: best_val_loss_unknown.pt
+[2025-04-03 04:30:47]   Saved: best_val_loss_multiclass.pt
+[2025-04-03 04:32:37] Epoch 2, Batch 50/225: Running Train Loss: 0.2164
+[2025-04-03 04:34:27] Epoch 2, Batch 100/225: Running Train Loss: 0.2186
+[2025-04-03 04:36:17] Epoch 2, Batch 150/225: Running Train Loss: 0.2193
+[2025-04-03 04:38:07] Epoch 2, Batch 200/225: Running Train Loss: 0.2161
