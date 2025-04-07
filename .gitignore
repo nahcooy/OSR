@@ -1,0 +1,33 @@
+# 무시할 확장자들
+*.pt
+*.pth
+*.ckpt
+*.tar
+*.zip
+*.npy
+*.log
+*.txt
+*.csv
+*.json
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+*.pdf
+*.h5
+*.npz
+*.onnx
+*.model
+*.weights
+*.md
+
+# 무시할 폴더들 (예시)
+__pycache__/
+.ipynb_checkpoints/
+checkpoints/
+outputs/
+runs/
+results/
+saved_models/
+experiments/
