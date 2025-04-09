@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # 기본 설정
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 args = {
     'image_size': 224,
     'random_seed': 42,
@@ -62,7 +62,7 @@ def finetune_mae(resume='', start_epoch=None):
     model = MAEForClassification(mae_model, num_classes=6)
     model.to(device)
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.03)
     loss_scaler = NativeScaler()
     criterion = nn.CrossEntropyLoss()
 
@@ -71,9 +71,9 @@ def finetune_mae(resume='', start_epoch=None):
         print(f"Resuming from checkpoint: {resume}")
         checkpoint = torch.load(resume, map_location='cpu')
         model.load_state_dict(checkpoint['model'])
-        optimizer.load_state_dict(checkpoint.get('optimizer', optimizer.state_dict()))  # 옵티마이저 상태 로드 (선택적)
-        loaded_epoch = checkpoint.get('epoch', 0)  # 저장된 epoch 가져오기, 없으면 0
-        print(f"Loaded checkpoint from epoch {loaded_epoch}")
+        # optimizer.load_state_dict(checkpoint.get('optimizer', optimizer.state_dict()))  # 옵티마이저 상태 로드 (선택적)
+        # loaded_epoch = checkpoint.get('epoch', 0)  # 저장된 epoch 가져오기, 없으면 0
+        # print(f"Loaded checkpoint from epoch {loaded_epoch}")
     else:
         loaded_epoch = 0
 
@@ -87,9 +87,9 @@ def finetune_mae(resume='', start_epoch=None):
 
     epochs = 200
     print_freq = 50
-    best_val_loss = float('inf')  # validation loss를 최소화하므로 초기값을 무한대로 설정
+    best_val_loss = float('inf')
     best_epoch = 0
-    save_path = os.path.join(args['output_dir'], 'best_finetune_checkpoint.pth')
+    save_path = os.path.join(args['output_dir'], 'best_finetune_checkpoint_hyper.pth')
 
     os.makedirs(args['output_dir'], exist_ok=True)
     print(f"Starting fine-tuning with train: {len(train_dataset)}, val: {len(val_dataset)} samples")
@@ -181,6 +181,6 @@ def finetune_mae(resume='', start_epoch=None):
 
 if __name__ == '__main__':
     # 예시: 특정 체크포인트에서 재개하고 시작 epoch을 설정
-    finetune_mae(resume='/nahcooy/OSR/HAM/ghost/mae/checkpoint/best_finetune_checkpoint.pth', start_epoch=50)
+    finetune_mae(resume='/nahcooy/OSR/HAM/ghost/mae/checkpoint/best_finetune_checkpoint_hyper.pth', start_epoch=50)
     # 또는 체크포인트 없이 처음부터 시작
     # finetune_mae()

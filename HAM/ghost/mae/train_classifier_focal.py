@@ -15,13 +15,13 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # 기본 설정
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 args = {
     'image_size': 224,
     'random_seed': 42,
-    'batch_size': 16,
+    'batch_size': 8,
     'num_workers': 8,
-    'output_dir': '/nahcooy/OSR/HAM/ghost/mae/checkpoint',
+    'output_dir': '/home/nikhil/nahcooy/mae/checkpoint',
 }
 
 # Classification용 모델 클래스 정의
@@ -37,10 +37,28 @@ class MAEForClassification(nn.Module):
         cls_token = x[:, 0]  # [CLS] 토큰
         return self.head(cls_token)  # logits 반환
 
+# Focal Loss 정의
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=2.0, alpha=None, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.alpha = alpha if alpha is not None else torch.ones(6).to(device)
+        self.reduction = reduction
+
+    def forward(self, inputs, targets):
+        ce_loss = nn.functional.cross_entropy(inputs, targets, reduction='none')
+        pt = torch.exp(-ce_loss)
+        focal_loss = (1 - pt) ** self.gamma * ce_loss
+        if self.alpha is not None:
+            focal_loss = self.alpha[targets] * focal_loss
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        return focal_loss.sum()
+
 # Fine-tuning 함수
 def finetune_mae(resume='', start_epoch=None):
-    train_dataset = getHAM10000Dataset(data_path='/dataset/nahcooy/HAM', split='train', **args)
-    val_dataset = getHAM10000Dataset(data_path='/dataset/nahcooy/HAM', split='val_known', **args)
+    train_dataset = getHAM10000Dataset(data_path='/home/nikhil/nahcooy/HAM', split='train', **args)
+    val_dataset = getHAM10000Dataset(data_path='/home/nikhil/nahcooy/HAM', split='val_known', **args)
 
     train_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=True,
                               num_workers=args['num_workers'], drop_last=True)
@@ -64,7 +82,9 @@ def finetune_mae(resume='', start_epoch=None):
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
     loss_scaler = NativeScaler()
-    criterion = nn.CrossEntropyLoss()
+    # Focal Loss 적용 (클래스 가중치 추가)
+    alpha = torch.tensor([0.25, 1.0, 1.0, 1.5, 2.0, 2.0]).to(device)  # 소수 클래스에 높은 가중치
+    criterion = FocalLoss(gamma=2.0, alpha=alpha)
 
     # 체크포인트 로드 (resume)
     if resume and os.path.exists(resume):
@@ -87,9 +107,9 @@ def finetune_mae(resume='', start_epoch=None):
 
     epochs = 200
     print_freq = 50
-    best_val_loss = float('inf')  # validation loss를 최소화하므로 초기값을 무한대로 설정
+    best_val_loss = float('inf')
     best_epoch = 0
-    save_path = os.path.join(args['output_dir'], 'best_finetune_checkpoint.pth')
+    save_path = os.path.join(args['output_dir'], 'best_finetune_checkpoint_focal.pth')
 
     os.makedirs(args['output_dir'], exist_ok=True)
     print(f"Starting fine-tuning with train: {len(train_dataset)}, val: {len(val_dataset)} samples")
@@ -181,6 +201,6 @@ def finetune_mae(resume='', start_epoch=None):
 
 if __name__ == '__main__':
     # 예시: 특정 체크포인트에서 재개하고 시작 epoch을 설정
-    finetune_mae(resume='/nahcooy/OSR/HAM/ghost/mae/checkpoint/best_finetune_checkpoint.pth', start_epoch=50)
+    finetune_mae(resume='/home/nikhil/nahcooy/mae/checkpoint/best_finetune_checkpoint_focal.pth', start_epoch=30)
     # 또는 체크포인트 없이 처음부터 시작
     # finetune_mae()
