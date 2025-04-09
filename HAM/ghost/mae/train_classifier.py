@@ -6,7 +6,6 @@ import os
 from datetime import datetime
 from util.models_mae import mae_vit_huge_patch14
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
-import util.misc as misc
 from sklearn.metrics import roc_auc_score, f1_score, recall_score, precision_score, confusion_matrix
 import numpy as np
 from dataset import getHAM10000Dataset
