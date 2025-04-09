@@ -7,45 +7,45 @@ from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_sco
 from sklearn.preprocessing import label_binarize
 from datetime import datetime
 import numpy as np
+from torchvision import models
 
-from dataset import getHAM10000Dataset
-from util.models_mae import mae_vit_huge_patch14  # MAE backbone
+from dataset import getHAM10000Dataset  # dataset.py에서 가져옴
+
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # 기본 설정
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 args = {
     'data_path': '/dataset/nahcooy/HAM_total',
     'image_size': 224,
-    'batch_size': 16,
+    'batch_size': 32,
     'num_workers': 12,
     'epochs': 200,
     'output_dir': './checkpoint',
     'num_classes': 7,
     'lr': 1e-4,
     'seed': 42,
-    'pretrained_path': '/nahcooy/OSR/HAM/ghost/mae/mae_pretrain_vit_huge.pth'
+    'pretrained': True  # ConvNeXt V2 사전 학습 여부
 }
 os.makedirs(args['output_dir'], exist_ok=True)
 
-# 🔹 MAE 기반 Classification 모델 정의
-class MAEForClassification(nn.Module):
-    def __init__(self, mae_model, num_classes=7):
-        super(MAEForClassification, self).__init__()
-        self.mae = mae_model
-        self.head = nn.Linear(1280, num_classes)  # ViT-Huge의 embed_dim은 1280
-        nn.init.trunc_normal_(self.head.weight, std=2e-5)
+# 🔹 ConvNeXt V2 기반 Classification 모델 정의
+class ConvNeXtV2ForClassification(nn.Module):
+    def __init__(self, num_classes=7, pretrained=True):
+        super(ConvNeXtV2ForClassification, self).__init__()
+        # ConvNeXt V2 Base 모델 사용
+        self.convnext = models.convnext_base(weights='IMAGENET1K_V1' if pretrained else None)
+        # 마지막 분류 레이어 수정
+        in_features = self.convnext.classifier[-1].in_features
+        self.convnext.classifier[-1] = nn.Linear(in_features, num_classes)
 
     def forward(self, x):
-        x = self.mae.forward_encoder(x, mask_ratio=0)[0]  # 인코더만 사용
-        cls_token = x[:, 0]
-        return self.head(cls_token)
+        return self.convnext(x)
 
 # 🔹 모델 로드
 def load_model():
-    mae_model = mae_vit_huge_patch14()
-    checkpoint = torch.load(args['pretrained_path'], map_location='cpu')
-    mae_model.load_state_dict(checkpoint['model'], strict=False)
-    model = MAEForClassification(mae_model, num_classes=args['num_classes'])
+    model = ConvNeXtV2ForClassification(num_classes=args['num_classes'], pretrained=args['pretrained'])
     return model
 
 # 🔹 학습 루프
@@ -62,12 +62,14 @@ def train():
     # 손실함수 및 옵티마이저
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=args['lr'], weight_decay=0.05)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args['epochs'])  # CosineAnnealingLR 추가
 
     best_val_loss = float('inf')
     best_val_f1 = 0.0
     print_freq = 50
 
     for epoch in range(args['epochs']):
+        # 학습
         model.train()
         train_loss = 0.0
 
@@ -82,10 +84,12 @@ def train():
 
             train_loss += loss.item()
 
+            # 50 배치마다 또는 마지막 배치에서 로스 출력
             if (step + 1) % print_freq == 0 or (step + 1) == len(train_loader):
-                print(f"[{datetime.now()}] Epoch {epoch+1} | Step {step+1}/{len(train_loader)} | Loss: {loss.item():.4f}")
+                print(f"[{datetime.now()}] Epoch {epoch+1} | Step {step+1}/{len(train_loader)} | Train Loss: {loss.item():.4f}")
 
         avg_train_loss = train_loss / len(train_loader)
+        print(f"[{datetime.now()}] Epoch {epoch+1} | Avg Train Loss: {avg_train_loss:.4f}")
 
         # 🔸 검증
         model.eval()
@@ -130,11 +134,12 @@ def train():
 
         cm = confusion_matrix(all_labels, all_preds)
 
-        # 🔸 출력
+        # 🔸 검증 메트릭 출력
         print(f"\n[{datetime.now()}] Epoch [{epoch+1}/{args['epochs']}] Validation:")
         print(f"  🔸 Val Loss: {avg_val_loss:.4f}, Top-1 Acc: {top1_acc:.4f}, Top-3 Acc: {top3_acc:.4f}")
         print(f"  🔸 F1: {f1:.4f}, Recall: {recall:.4f}, Precision: {precision:.4f}, AUROC: {auroc:.4f}")
         print(f"  🔸 Confusion Matrix:\n{cm}")
+        print(f"  🔸 Classification Report:\n{classification_report(all_labels, all_preds, digits=4)}")
 
         # 🔸 모델 저장
         if avg_val_loss < best_val_loss:
@@ -149,7 +154,10 @@ def train():
             torch.save({'model': model.state_dict(), 'epoch': epoch + 1, 'val_f1': best_val_f1}, path)
             print(f"✅ Best (F1) model saved at epoch {epoch+1} → {path}")
 
-    # 🔸 최종 리포트
+        # 학습률 업데이트
+        scheduler.step()
+
+    # 🔸 최종 리포트 (마지막 epoch의 결과 재출력)
     print("\n📊 Final Classification Report (Validation Set):")
     print(classification_report(all_labels, all_preds, digits=4))
     print("📊 Final Confusion Matrix:")
