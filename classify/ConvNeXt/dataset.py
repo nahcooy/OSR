@@ -14,7 +14,7 @@ def getHAM10000Dataset(data_path='./data', split='train', image_size=224, **kwar
     ])
 
     # 메타데이터 및 이미지 경로 설정
-    metadata_path = os.path.join(data_path, 'HAM10000_metadata_augmented.csv')
+    metadata_path = os.path.join(data_path, 'HAM10000_metadata.csv') # 'HAM10000_metadata_augmented.csv'
     image_dir = os.path.join(data_path, split)  # train/ 또는 val/
     metadata = pd.read_csv(metadata_path)
 

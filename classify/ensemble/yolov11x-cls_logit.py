@@ -5,15 +5,15 @@ from ultralytics import YOLO
 import cv2
 from sklearn.preprocessing import LabelEncoder
 
-device = 'cuda:1'  # 또는 'cpu'
+device = 'cuda:0'  # 또는 'cpu'
 IMAGE_SIZE = 224
 DATA_DIR = '/dataset/nahcooy/HAM_yolo'  # train/val 구조
-SAVE_DIR = 'logits/yolo'
+SAVE_DIR = '/nahcooy/OSR/classify/ensemble/logits/Yolo'
 CLASSES = ['nv', 'mel', 'bkl', 'akiec', 'vasc', 'df', 'bcc']
 label_encoder = LabelEncoder()
 label_encoder.fit(CLASSES)
 
-model = YOLO('saver/yolo11-ham_0410/best.pt')
+model = YOLO('/nahcooy/OSR/classify/yolov11/saver/yolo11-ham_no_aug/weights/best.pt')
 
 def extract_yolo_logits(split):
     image_dir = os.path.join(DATA_DIR, split)
@@ -35,7 +35,8 @@ def extract_yolo_logits(split):
         img = cv2.imread(path)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         result = model.predict(img_rgb, imgsz=IMAGE_SIZE, device=device, verbose=False)[0]
-        probs = result.probs.cpu().numpy()
+        # probs.data를 사용하여 torch.Tensor를 추출하고 numpy로 변환
+        probs = result.probs.data.cpu().numpy()
         logits_list.append(probs)
 
     os.makedirs(SAVE_DIR, exist_ok=True)

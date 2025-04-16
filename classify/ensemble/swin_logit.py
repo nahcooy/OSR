@@ -7,7 +7,7 @@ import torch.nn as nn
 from dataset import getHAM10000Dataset
 from tqdm import tqdm
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0')
 BATCH_SIZE = 64
 NUM_CLASSES = 7
 
@@ -15,7 +15,7 @@ NUM_CLASSES = 7
 class SwinForClassification(nn.Module):
     def __init__(self, num_classes=NUM_CLASSES, pretrained=False):
         super().__init__()
-        self.swin = models.swin_v2_s(weights='IMAGENET1K_V1' if pretrained else None)  # 사전학습 선택 가능
+        self.swin = models.swin_v2_b(weights='IMAGENET1K_V1' if pretrained else None)  # 사전학습 선택 가능
         in_features = self.swin.head.in_features
         self.swin.head = nn.Linear(in_features, num_classes)
 
@@ -56,8 +56,8 @@ def extract_logits(model, split, save_dir):
 
 # 🔸 실행
 if __name__ == '__main__':
-    weight_path = '/nahcooy/OSR/classify/swin/checkpoint/best_val_f1.pth'
-    save_path = 'logits/swin'
+    weight_path = '/nahcooy/OSR/classify/swin/checkpoint/best_val_acc.pth'
+    save_path = '/nahcooy/OSR/classify/ensemble/logits/swin'
     model = load_model(weight_path)
     extract_logits(model, 'train', save_path)
     extract_logits(model, 'val', save_path)

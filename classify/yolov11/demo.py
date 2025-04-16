@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 # 모델 로드
-model = YOLO("/nahcooy/OSR/classify/yolov11/saver/yolo11-ham_0410/weights/best.pt")
+model = YOLO("/nahcooy/OSR/classify/yolov11/saver/yolo11-ham_no_aug/weights/best.pt")
 
 # 검증 데이터 경로
 val_path = "/dataset/nahcooy/HAM_yolo/val/total"
